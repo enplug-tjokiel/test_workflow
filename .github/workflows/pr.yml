@@ -29,9 +29,12 @@ jobs:
           working_directory: dist
           files: |
             checksums/*.md5
-            dist/build/out/build_info.txt
-            dist/tests/tests_info.txt
-          body: Release number ${{ github.run_number }}
+            build/out/build_info.txt
+            tests/tests_info.txt
+          body: |
+            Release number ${{ github.run_number }}
+
+            This is further description
           draft: false
           prerelease: false
           make_latest: true
