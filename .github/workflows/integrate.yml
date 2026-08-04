@@ -17,17 +17,68 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Checkout merged branch code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Parse branch and update version.properties
+        run: |
+          # 1. Parse Major and Minor from target branch name (e.g., release_v81.10)
+          # TARGET_BRANCH="${{ github.base_ref }}"
+          TARGET_BRANCH="${{ github.ref_name }}"
+
+          if [[ $TARGET_BRANCH =~ ^release_v([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR="${BASH_REMATCH[1]}"
+            MINOR="${BASH_REMATCH[2]}"
+          else
+            echo "Error: Target branch '$TARGET_BRANCH' does not match pattern release_v<major>.<minor>"
+            exit 1
+          fi
+
+          # 2. Extract and increment current patch version from version.properties
+          CURRENT_PATCH=$(grep -E '^version\.patch=' version.properties | cut -d'=' -f2 | tr -d '\r')
+          PATCH=$((CURRENT_PATCH + 1))
+
+          FMT_MINOR=$(printf "%03d" "$MINOR")
+          FMT_PATCH=$(printf "%03d" "$PATCH")
+          CODE="${MAJOR}${FMT_MINOR}${FMT_PATCH}"
+
+          # 3. Update values in version.properties
+          sed -i -E "s/^version\.code=.*/version.code=$CODE/" version.properties
+          sed -i -E "s/^version\.major=.*/version.major=$MAJOR/" version.properties
+          sed -i -E "s/^version\.minor=.*/version.minor=$MINOR/" version.properties
+          sed -i -E "s/^version\.patch=.*/version.patch=$PATCH/" version.properties
+
+          # 4. Export to environment variables for subsequent steps
+          echo "VERSION_CODE=$CODE" >> $GITHUB_ENV
+          echo "VERSION_MAJOR=$MAJOR" >> $GITHUB_ENV
+          echo "VERSION_MINOR=$MINOR" >> $GITHUB_ENV
+          echo "VERSION_PATCH=$PATCH" >> $GITHUB_ENV
+
+          echo "VERSION_MAJOR=$MAJOR"
+          echo "VERSION_MINOR=$MINOR"
+          echo "VERSION_PATCH=$PATCH"
+
+
+
+      - name: Commit and push updated version.properties
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: bump version to ${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}"
+          file_pattern: "version.properties"
+    steps:
+      - name: Checkout merged branch code
+        uses: actions/checkout@v4
+        # with:
           # Checkout the exact merge commit on the target release branch
-          ref: ${{ github.event.pull_request.base.ref }}
+          # ref: ${{ github.event.pull_request.base.ref }}
 
       # --- Replace this section with your actual build commands ---
       - name: Execute Build
         run: |
           mkdir -p output
           echo "Build output for version ${{ env.VERSION_STRING }}" > output/app-build.txt
+          cp version.properties output/
       # -------------------------------------------------------------
 
       - name: Upload Build Artifacts
