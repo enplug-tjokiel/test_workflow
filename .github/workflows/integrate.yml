@@ -36,12 +36,18 @@ jobs:
           CURRENT_PATCH=$(grep -E '^version\.patch=' version.properties | cut -d'=' -f2 | tr -d '\r')
           PATCH=$((CURRENT_PATCH + 1))
 
+          FMT_MINOR=$(printf "%03d" "$MINOR")
+          FMT_PATCH=$(printf "%03d" "$PATCH")
+          CODE="${MAJOR}${FMT_MINOR}${FMT_PATCH}"
+
           # 3. Update values in version.properties
+          sed -i -E "s/^version\.code=.*/version.code=$CODE/" version.properties
           sed -i -E "s/^version\.major=.*/version.major=$MAJOR/" version.properties
           sed -i -E "s/^version\.minor=.*/version.minor=$MINOR/" version.properties
           sed -i -E "s/^version\.patch=.*/version.patch=$PATCH/" version.properties
 
           # 4. Export to environment variables for subsequent steps
+          echo "VERSION_CODE=$CODE" >> $GITHUB_ENV
           echo "VERSION_MAJOR=$MAJOR" >> $GITHUB_ENV
           echo "VERSION_MINOR=$MINOR" >> $GITHUB_ENV
           echo "VERSION_PATCH=$PATCH" >> $GITHUB_ENV
