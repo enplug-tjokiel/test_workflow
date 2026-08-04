@@ -1,0 +1,49 @@
+name: Validate PR
+
+on:
+  pull_request:
+    branches:
+      - 'release_v*'
+
+jobs:
+  process-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Checkout PR head branch to ensure commits land on the source branch
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Parse branch and update version.properties
+        run: |
+          # 1. Parse Major and Minor from target branch name (e.g., release_v81.10)
+          TARGET_BRANCH="${{ github.base_ref }}"
+
+          if [[ $TARGET_BRANCH =~ ^release_v([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR="${BASH_REMATCH[1]}"
+            MINOR="${BASH_REMATCH[2]}"
+          else
+            echo "Error: Target branch '$TARGET_BRANCH' does not match pattern release_v<major>.<minor>"
+            exit 1
+          fi
+
+          # 2. Extract and increment current patch version from version.properties
+          CURRENT_PATCH=$(grep -E '^version\.patch=' version.properties | cut -d'=' -f2 | tr -d '\r')
+          PATCH=$((CURRENT_PATCH + 1))
+
+          # 3. Update values in version.properties
+          sed -i -E "s/^version\.major=.*/version.major=$MAJOR/" version.properties
+          sed -i -E "s/^version\.minor=.*/version.minor=$MINOR/" version.properties
+          sed -i -E "s/^version\.patch=.*/version.patch=$PATCH/" version.properties
+
+          # 4. Export to environment variables for subsequent steps
+          echo "VERSION_MAJOR=$MAJOR" >> $GITHUB_ENV
+          echo "VERSION_MINOR=$MINOR" >> $GITHUB_ENV
+          echo "VERSION_PATCH=$PATCH" >> $GITHUB_ENV
+
+      # - name: Commit and push updated version.properties
+      #   uses: stefanzweifel/git-auto-commit-action@v5
+      #   with:
+      #     commit_message: "chore: bump version to ${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}"
+      #     file_pattern: "version.properties"
