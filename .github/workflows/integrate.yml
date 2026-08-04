@@ -1,7 +1,9 @@
-name: Validate PR
-
+name: Integrate to release
+# on:
+#   push:
+#     branches: [ "main" ]
 on:
-  pull_request:
+  push:
     branches:
       - 'release_v*'
 
@@ -12,9 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Checkout PR head branch to ensure commits land on the source branch
           ref: ${{ github.event.pull_request.head.ref }}
-
       - name: Parse branch and update version.properties
         run: |
           # 1. Parse Major and Minor from target branch name (e.g., release_v81.10)
@@ -46,8 +46,8 @@ jobs:
           echo "VERSION_MINOR=$MINOR"
           echo "VERSION_PATCH=$PATCH"
 
-      # - name: Commit and push updated version.properties
-      #   uses: stefanzweifel/git-auto-commit-action@v5
-      #   with:
-      #     commit_message: "chore: bump version to ${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}"
-      #     file_pattern: "version.properties"
+      - name: Commit and push updated version.properties
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: bump version to ${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}"
+          file_pattern: "version.properties"
