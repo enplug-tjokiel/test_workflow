@@ -9,6 +9,7 @@ on:
 
 jobs:
   process-version:
+    if: "!contains(github.event.head_commit.message, 'chore: bump version')"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -18,7 +19,8 @@ jobs:
       - name: Parse branch and update version.properties
         run: |
           # 1. Parse Major and Minor from target branch name (e.g., release_v81.10)
-          TARGET_BRANCH="${{ github.base_ref }}"
+          # TARGET_BRANCH="${{ github.base_ref }}"
+          TARGET_BRANCH="${{ github.ref_name }}"
 
           if [[ $TARGET_BRANCH =~ ^release_v([0-9]+)\.([0-9]+)$ ]]; then
             MAJOR="${BASH_REMATCH[1]}"
