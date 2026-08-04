@@ -35,6 +35,7 @@ jobs:
             Release number ${{ github.run_number }}
 
             This is further description
+            Dummy line
           draft: false
           prerelease: false
           make_latest: true
