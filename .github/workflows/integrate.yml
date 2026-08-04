@@ -1,7 +1,5 @@
 name: Integrate to release
-# on:
-#   push:
-#     branches: [ "main" ]
+
 on:
   pull_request:
     types: [closed]
