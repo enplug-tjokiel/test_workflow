@@ -65,7 +65,7 @@ jobs:
         with:
           commit_message: "chore: bump version to ${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}"
           file_pattern: "version.properties"
-    steps:
+
       - name: Checkout merged branch code
         uses: actions/checkout@v4
         # with:
