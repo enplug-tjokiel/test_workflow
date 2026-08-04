@@ -42,6 +42,10 @@ jobs:
           echo "VERSION_MINOR=$MINOR" >> $GITHUB_ENV
           echo "VERSION_PATCH=$PATCH" >> $GITHUB_ENV
 
+          echo "VERSION_MAJOR=$MAJOR"
+          echo "VERSION_MINOR=$MINOR"
+          echo "VERSION_PATCH=$PATCH"
+
       # - name: Commit and push updated version.properties
       #   uses: stefanzweifel/git-auto-commit-action@v5
       #   with:

@@ -5,6 +5,8 @@ on:
     types: [opened, synchronize, reopened, edited]
     branches:
       - 'release_v*'
+permissions:
+  contents: write
 
 jobs:
   validate-pr-title:
