@@ -28,9 +28,8 @@ jobs:
         with:
           working_directory: dist
           files: |
-            checksums/*.md5
-            build/out/build_info.txt
-            tests/tests_info.txt
+            **/*.md5
+            **/*_info.txt
           body: |
             Release number ${{ github.run_number }}
 
