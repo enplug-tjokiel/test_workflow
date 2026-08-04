@@ -72,9 +72,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.ref }}
-        # with:
-          # Checkout the exact merge commit on the target release branch
-          # ref: ${{ github.event.pull_request.base.ref }}
 
       # --- Replace this section with your actual build commands ---
       - name: Execute Build
