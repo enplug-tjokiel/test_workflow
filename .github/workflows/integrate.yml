@@ -11,8 +11,7 @@ on:
 jobs:
   process-version:
     if: >-
-      github.event.pull_request.merged == true &&
-      contains(github.event.head_commit.message, 'chore: bump version')
+      github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
