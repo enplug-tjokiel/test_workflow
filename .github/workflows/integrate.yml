@@ -97,5 +97,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `###  PR Merged & Release Built!\n\n **[Download Release Artifacts](${runUrl}#artifacts)**`
+              body: `###  PR Merged & Built!\n\n **[Download PR Artifacts](${runUrl}#artifacts)**`
             });
