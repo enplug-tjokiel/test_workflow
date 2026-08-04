@@ -9,7 +9,7 @@ on:
       - 'release_v*'
 
 jobs:
-  process-version:
+  build-and-comment:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+
       - name: Parse branch and update version.properties
         run: |
           # 1. Parse Major and Minor from target branch name (e.g., release_v81.10)
@@ -68,6 +69,8 @@ jobs:
 
       - name: Checkout merged branch code
         uses: actions/checkout@v4
+          with:
+            ref: ${{ github.event.pull_request.head.ref }}
         # with:
           # Checkout the exact merge commit on the target release branch
           # ref: ${{ github.event.pull_request.base.ref }}
