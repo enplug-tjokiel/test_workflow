@@ -1,0 +1,37 @@
+name: Android CI/CD
+# on:
+#   push:
+#     branches: [ "main" ]
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-**'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          mkdir -p dist/build/out
+          mkdir -p dist/tests
+          mkdir -p dist/checksums
+          echo "Build main number: ${{ github.run_number }}" > dist/build/out/build_info.txt
+          echo "Tests main number: ${{ github.run_number }}" > dist/tests/tests_info.txt
+          md5sum dist/tests/tests_info.txt > dist/checksums/tests_info.md5
+          md5sum dist/build/out/build_info.txt > dist/checksums/build_info.md5
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        with:
+          working_directory: dist
+          files: |
+            checksums/*.md5
+            dist/build/out/build_info.txt
+            dist/tests/tests_info.txt
+          body: Release number ${{ github.run_number }}
+          draft: false
+          prerelease: false
+          make_latest: true
