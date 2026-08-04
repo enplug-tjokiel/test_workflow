@@ -1,4 +1,4 @@
-name: Integrate to release
+name: Bump up version
 # on:
 #   push:
 #     branches: [ "main" ]
@@ -9,7 +9,7 @@ on:
 
 jobs:
   process-version:
-    if: "!contains(github.event.head_commit.message, 'chore: bump version')"
+    if: "!contains(github.event.head_commit.message, 'chore: bump version')" && false
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -55,6 +55,8 @@ jobs:
           echo "VERSION_MAJOR=$MAJOR"
           echo "VERSION_MINOR=$MINOR"
           echo "VERSION_PATCH=$PATCH"
+
+
 
       - name: Commit and push updated version.properties
         uses: stefanzweifel/git-auto-commit-action@v5
