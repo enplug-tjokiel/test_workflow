@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Parse branch and update version.properties
         run: |
@@ -67,10 +67,10 @@ jobs:
           commit_message: "chore: bump version to ${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}"
           file_pattern: "version.properties"
 
-      - name: Checkout merged branch code
+      - name: Checkout updated release branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.base.ref }}
         # with:
           # Checkout the exact merge commit on the target release branch
           # ref: ${{ github.event.pull_request.base.ref }}
