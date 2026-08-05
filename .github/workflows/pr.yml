@@ -7,7 +7,7 @@ on:
 
 jobs:
   process-version:
-    if: false
+    # if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -53,3 +53,20 @@ jobs:
           echo "VERSION_MAJOR=$MAJOR"
           echo "VERSION_MINOR=$MINOR"
           echo "VERSION_PATCH=$PATCH"
+      - name: Build
+        run: |
+          mkdir -p dist/build/out
+          mkdir -p dist/tests
+          mkdir -p dist/checksums
+          echo "Build main number: ${{ github.run_number }}" > dist/build/out/build_info.txt
+          echo "Tests main number: ${{ github.run_number }}" > dist/tests/tests_info.txt
+          md5sum dist/tests/tests_info.txt > dist/checksums/tests_info.md5
+          md5sum dist/build/out/build_info.txt > dist/checksums/build_info.md5
+      - name: Upload Build Artifacts
+        id: upload-artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-build-pr-${{ github.event.pull_request.number }}
+          path: |
+            **/*.md5
+          retention-days: 3
