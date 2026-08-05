@@ -95,7 +95,7 @@ jobs:
           body: |
             ![badge]
 
-            ### PR Merged & Built!
+            ### PR Merged & Built! OK
 
             You can find a link to the downloadable artifact below.
 
