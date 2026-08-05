@@ -67,7 +67,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-build-pr-${{ github.event.pull_request.number }}
-          path: |
-            **/*.md5
-            **/*.txt
+          path: **/*.txt
           retention-days: 3
