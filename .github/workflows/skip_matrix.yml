@@ -1,0 +1,33 @@
+name: Test workflow
+
+on:
+  push:
+    branches:
+      - 'test'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - variant: "Variant_a"
+            keystore_local_path: "~/.android/aaa.jks"
+            doppler_key_keystore: "AAA_RELEASE_KEYSTORE"
+            doppler_key_keystore_passphrase: "AAA_RELEASE_KEYSTORE_PASSPHRASE"
+
+          - variant: "Variant_b"
+            keystore_local_path: "~/.android/bbb.jks"
+            doppler_key_keystore: "BBB_RELEASE_KEYSTORE"
+            doppler_key_keystore_passphrase: "BBB_RELEASE_KEYSTORE_PASSPHRASE"
+
+          - variant: "Variant_c"
+            keystore_local_path: ""
+            doppler_key_keystore: ""
+            doppler_key_keystore_passphrase: ""
+    steps:
+      - name: Run script coditionally
+        if: ${{ matrix.keystore_local_path != '' }}
+        run: |
+          echo "Run script for variant: ${{ matrix.variant }}"
+          mkdir -p $(dirname ${{ matrix.keystore_local_path }})
